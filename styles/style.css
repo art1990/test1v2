@@ -4,15 +4,13 @@
     grid-template-columns: 52px auto auto;
     margin: 50px 0 50px 50px;
     justify-content: left;
-    position: relative;
-    /*position: relative;*/
-
 }
 
 .table{
     grid-column: 2/3;
     grid-row: 2/3;
     border: 2px solid #46ace7;
+    display: block;
 }
 
 .cell{
@@ -36,6 +34,9 @@
     background-color: #f3a700;
 }
 
+.btn-add:hover {
+    background-color: #f6c151;
+}
 
 .btn-add-column {
     grid-column: 3/4;
@@ -50,10 +51,19 @@
 }
 
 
+
 .btn-remove {
     position: relative;
     visibility: hidden;
     background-color: #b40000;
+    -webkit-transition: top 0.3s, left 0.3s, visibility 0.1s;
+    -moz-transition: top 0.3s, left 0.3s, visibility 0.1s;
+    -o-transition: top 0.3s, left 0.3s, visibility 0.1s;
+    transition: top 0.3s, left 0.3s, visibility 0.1s;
+}
+
+.btn-remove:hover {
+    background-color: #cb4b47;
 }
 
 .btn-remove-visible {
@@ -64,18 +74,14 @@
     grid-column: 1/2;
     grid-row: 2/3;
     margin: 2px 0 0 0;
-    -webkit-transition: all 0.3s;
-    -moz-transition: all 0.3s;
-    -o-transition: all 0.3s;
-    transition: all 0.3s;
 }
 
 .btn-remove-column {
     grid-column: 2/3;
     grid-row: 1/2;
-    margin:0 0 0 2px;
-    -webkit-transition: all 0.3s;
-    -moz-transition: all 0.3s;
-    -o-transition: all 0.3s;
-    transition: all 0.3s;
+    margin:0 0 2px 2px;
+}
+.btn:focus {
+    outline: 2px solid #46ace7;
+    outline-offset: 2px;
 }

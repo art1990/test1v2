@@ -7,29 +7,28 @@ class Table {
   }
 
   createTable() {
-    
-
     /*......................Get function........................*/
+
     const getTrArr = () => {
-      const tr = this.table.querySelectorAll("tr");
-      return tr;
+      return this.table.querySelectorAll("tr");
     };
+
     const getPositionElement = target => {
-      const element = target.getBoundingClientRect();
-      return element
+      return target.getBoundingClientRect();
     };
 
     const getNumberColumn = () => {
-      const td = getTrArr()[0].querySelectorAll("td").length
-      return td
-    }
-   
+      return getTrArr()[0].querySelectorAll("td").length;
+    };
+
     /*......................Create tag function........................*/
+
     const createTrElement = () => {
       let tr = document.createElement("tr");
       tr.classList.add("table-row");
       return tr;
     };
+
     const createTdElement = () => {
       let td = document.createElement("td");
       td.classList.add("cell");
@@ -59,35 +58,33 @@ class Table {
 
     const removeRow = e => {
       const target = e.target;
-      const positionElement = getPositionElement.bind(this, target);
-      const findTrFun = () =>
+      const positionElement = getPositionElement.bind(this, target); //bind binds the desired context and argument
+      const findTr = () =>
         document.elementFromPoint(
           positionElement().right + positionElement().width,
-          positionElement().top
+          positionElement().bottom
         ).parentNode;
-
-      const tr = findTrFun();
+      const tr = findTr();
       this.table.removeChild(tr);
       this.row--;
-    
-      if (!findTrFun().classList.contains("table-row")) {
+      if (!findTr().classList.contains("table-row")) {
         const lastElem = this.table.lastChild;
-        btnRemoveRow.style.top = lastElem.offsetTop.toString() + "px";
-        
+
+        btnRemoveRow.style.top = lastElem.offsetTop.toString() + "px"; //move the button if it is not opposite the cell
       }
       if (getTrArr().length === 1) {
+        // if there is one line left, remove the delete row button
         btnRemoveRow.classList.remove("btn-remove-visible");
-        return;
       }
     };
 
     const removeColumn = e => {
-      const target = e.target
-      const positionElemen = getPositionElement.bind(this, target);
+      const target = e.target;
+      const positionElement = getPositionElement.bind(this, target); //context and argument binding
       const findTdFun = () =>
         document.elementFromPoint(
-          positionElemen().right,
-          positionElemen().bottom + positionElemen().height
+          positionElement().right,
+          positionElement().bottom + positionElement().height
         );
       const td = findTdFun();
       if (td.classList.contains("btn")) {
@@ -100,27 +97,24 @@ class Table {
         allTr[i].removeChild(removeTd);
       }
       this.column--;
-      
       if (!findTdFun().classList.contains("cell")) {
         const lastElem = getTrArr()[0].lastChild;
-        btnRemoveColumn.style.left = lastElem.offsetLeft.toString() + "px";
+        btnRemoveColumn.style.left = lastElem.offsetLeft.toString() + "px"; //move the button if it is not opposite the cell
       }
-
-      if (
-        getNumberColumn() === 1
-    ) {
-      btnRemoveColumn.classList.remove("btn-remove-visible");
-      return;
-    }
+      if (getNumberColumn() === 1) {
+        //if there is only one column, remove the delete column button
+        btnRemoveColumn.classList.remove("btn-remove-visible");
+      }
     };
 
-    /*......................Buttom functions........................*/
+    /*......................Button functions........................*/
 
     const createBtn = () => {
       const btn = document.createElement("button");
       btn.classList.add("btn");
       return btn;
     };
+
     const createAddBtn = () => {
       const addBtn = createBtn();
       addBtn.classList.add("btn-add");
@@ -136,6 +130,7 @@ class Table {
     };
 
     const moveRemoveBtn = (btnRemoveColumn, btnRemoveRow, e) => {
+      //move the delete buttons on the x and y axis
       const target = e.target;
       if (target.classList.contains("cell")) {
         btnRemoveColumn.style.left = target.offsetLeft.toString() + "px";
@@ -144,10 +139,14 @@ class Table {
     };
 
     const removeBtnVisible = () => {
+      //display only if the number of columns> 1;
       if (getNumberColumn() > 1) {
-      btnRemoveColumn.classList.add("btn-remove-visible");}
+        btnRemoveColumn.classList.add("btn-remove-visible");
+      }
+      //display only if the number of lines> 1;
       if (getTrArr().length > 1) {
-      btnRemoveRow.classList.add("btn-remove-visible");} //отображать только если число строк > 1;
+        btnRemoveRow.classList.add("btn-remove-visible");
+      }
     };
 
     const removeBtnHidden = (...arg) => {
@@ -161,17 +160,14 @@ class Table {
     /*......................Listeners........................*/
 
     const moveRemoveBtnListener = (elem, btnRemoveColumn, btnRemoveRow) => {
-      const moveBtn = moveRemoveBtn.bind(
-        this,
-        btnRemoveColumn,
-        btnRemoveRow
-      ); //привязка контекста event.target к функции
+      const moveBtn = moveRemoveBtn.bind(this, btnRemoveColumn, btnRemoveRow);
       elem.addEventListener("mouseover", moveBtn);
     };
 
     const addRowListener = btn => {
       btn.addEventListener("click", addRow);
     };
+
     const addColumnListener = btn => {
       btn.addEventListener("click", addColumn);
     };
@@ -180,14 +176,16 @@ class Table {
       const removeRowFunction = removeRow.bind(this);
       btn.addEventListener("click", removeRowFunction);
     };
+
     const removeColumnListener = btn => {
       const removeColumnFunction = removeColumn.bind(this);
       btn.addEventListener("click", removeColumnFunction);
     };
 
-    const removeBtnVisibleListener = (elem) => {
+    const removeBtnVisibleListener = elem => {
       elem.addEventListener("mouseover", removeBtnVisible);
     };
+
     const removeBtnHiddenListener = (elem, ...arg) => {
       const btnHidden = removeBtnHidden.bind(this, ...arg);
       elem.addEventListener("mouseout", btnHidden);
@@ -203,17 +201,18 @@ class Table {
       btn2.addEventListener("mouseout", btnHidden);
     };
 
-
     /*......................Table creation........................*/
 
+    //to prevent the reuse of the creative function in an instance
     if (this.flag) {
       return null;
-    } // для предотвращения повторного использывания createtable а екземпляре
+    }
     this.flag = true;
 
     if (!this.row || !this.column) {
       return null;
     }
+
     const div = document.createElement("div");
     const btnAddColumn = createAddBtn();
     const btnAddRow = createAddBtn();
@@ -223,7 +222,7 @@ class Table {
     btnAddRow.classList.add("btn-add-row");
     btnRemoveColumn.classList.add("btn-remove-column");
     btnRemoveRow.classList.add("btn-remove-row");
-   
+
     for (let j = 0; j < this.row; j++) {
       let tr = createTrElement();
       for (let i = 0; i < this.column; i++) {
@@ -232,6 +231,7 @@ class Table {
       }
       this.table.appendChild(tr);
     }
+
     this.table.classList.add("table");
     div.appendChild(this.table);
     div.classList.add("content");
@@ -244,20 +244,17 @@ class Table {
     addColumnListener(btnAddColumn);
     removeRowListener(btnRemoveRow);
     removeColumnListener(btnRemoveColumn);
-    moveRemoveBtnListener(this.table, btnRemoveColumn, btnRemoveRow); //добавление слушателя перемещение кнопок
-    removeBtnVisibleListener(this.table);//отображение кнопок удаления при наведении на таблицу
+    moveRemoveBtnListener(this.table, btnRemoveColumn, btnRemoveRow); //add listener move delete buttons
+    removeBtnVisibleListener(this.table); //display delete buttons when hovering over a table
     removeBtnHiddenListener(this.table, btnRemoveColumn, btnRemoveRow);
     removeBtnIsActiveListener(btnRemoveRow);
     removeBtnIsActiveListener(btnRemoveColumn);
-    removeBtnIsInActiveListener(btnRemoveColumn, btnRemoveRow)
-    removeBtnHiddenListener(btnRemoveColumn, btnRemoveColumn, btnRemoveRow);// если убрать мыш с removecolumn кнопка исчезает
-    removeBtnHiddenListener(btnRemoveRow, btnRemoveColumn, btnRemoveRow);// если убрать мыш с removerow кнопка исчезает
+    removeBtnIsInActiveListener(btnRemoveColumn, btnRemoveRow);
+    removeBtnHiddenListener(btnRemoveColumn, btnRemoveColumn, btnRemoveRow); //if you remove the mouse with
+    //remove column the button disappears
+    removeBtnHiddenListener(btnRemoveRow, btnRemoveColumn, btnRemoveRow); //if you remove the mouse with
+    //remove row the button disappears
   }
-
-  
 }
 
 const a = new Table(5, 5);
-
-
-

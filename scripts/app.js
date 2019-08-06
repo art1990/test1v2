@@ -2,7 +2,6 @@ class Table {
   constructor(row, column) {
     this.row = row;
     this.column = column;
-    this.table = document.createElement("table");
     this.createTable();
   }
 
@@ -10,7 +9,7 @@ class Table {
     /*......................Get function........................*/
 
     const getTrArr = () => {
-      return this.table.querySelectorAll("tr");
+      return table.querySelectorAll("tr");
     };
 
     const getPositionElement = target => {
@@ -35,6 +34,8 @@ class Table {
       return td;
     };
 
+    const table = document.createElement("table");
+
     /*......................Work with rows and columns........................*/
 
     const addRow = () => {
@@ -43,7 +44,7 @@ class Table {
         let td = createTdElement();
         tr.appendChild(td);
       }
-      this.table.appendChild(tr);
+      table.appendChild(tr);
       this.row++;
     };
 
@@ -69,13 +70,13 @@ class Table {
       if (td) {
         if (td.classList.contains("cell")) {
           const tr = findTr();
-          this.table.removeChild(tr);
+          table.removeChild(tr);
           this.row--;
           /*
           move the button if it is not opposite the cell
           */
           if (!findTr().classList.contains("table-row")) {
-            const lastElem = this.table.lastChild;
+            const lastElem = table.lastChild;
             btnRemoveRow.style.top = lastElem.offsetTop.toString() + "px";
           }
           if (getTrArr().length === 1) {
@@ -244,11 +245,11 @@ class Table {
         let td = createTdElement();
         tr.appendChild(td);
       }
-      this.table.appendChild(tr);
+      table.appendChild(tr);
     }
 
-    this.table.classList.add("table");
-    div.appendChild(this.table);
+    table.classList.add("table");
+    div.appendChild(table);
     div.classList.add("content");
     document.body.appendChild(div);
     div.appendChild(btnAddColumn);
@@ -262,9 +263,9 @@ class Table {
     addColumnListener(btnAddColumn);
     removeRowListener(btnRemoveRow);
     removeColumnListener(btnRemoveColumn);
-    moveRemoveBtnListener(this.table, btnRemoveColumn, btnRemoveRow);
-    removeBtnVisibleListener(this.table);
-    removeBtnHiddenListener(this.table, btnRemoveColumn, btnRemoveRow);
+    moveRemoveBtnListener(table, btnRemoveColumn, btnRemoveRow);
+    removeBtnVisibleListener(table);
+    removeBtnHiddenListener(table, btnRemoveColumn, btnRemoveRow);
     removeBtnIsActiveListener(btnRemoveRow);
     removeBtnIsActiveListener(btnRemoveColumn);
     removeBtnIsInActiveListener(btnRemoveColumn, btnRemoveRow);

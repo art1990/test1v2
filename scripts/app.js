@@ -58,53 +58,64 @@ class Table {
 
     const removeRow = e => {
       const target = e.target;
-      const positionElement = getPositionElement.bind(this, target); //bind binds the desired context and argument
-      const findTr = () =>
+      const positionElement = getPositionElement.bind(this, target);
+      const findTd = () =>
         document.elementFromPoint(
           positionElement().right + positionElement().width,
           positionElement().bottom
-        ).parentNode;
-      const tr = findTr();
-      this.table.removeChild(tr);
-      this.row--;
-      if (!findTr().classList.contains("table-row")) {
-        const lastElem = this.table.lastChild;
-
-        btnRemoveRow.style.top = lastElem.offsetTop.toString() + "px"; //move the button if it is not opposite the cell
+        );
+      const findTr = () => findTd().parentNode;
+      const td = findTd();
+      if(td) {
+        if(td.classList.contains("cell")){
+          const tr = findTr();
+          this.table.removeChild(tr);
+          this.row--;
+          /*
+          move the button if it is not opposite the cell
+          */
+          if (!findTr().classList.contains("table-row")) {
+            const lastElem = this.table.lastChild;
+            btnRemoveRow.style.top = lastElem.offsetTop.toString() + "px"; 
+          }
+          if (getTrArr().length === 1) {
+            btnRemoveRow.classList.remove("btn-remove-visible");
+          }
+        } 
       }
-      if (getTrArr().length === 1) {
-        // if there is one line left, remove the delete row button
-        btnRemoveRow.classList.remove("btn-remove-visible");
-      }
+          
+     
+      
     };
 
     const removeColumn = e => {
       const target = e.target;
-      const positionElement = getPositionElement.bind(this, target); //context and argument binding
+      const positionElement = getPositionElement.bind(this, target);
       const findTdFun = () =>
         document.elementFromPoint(
           positionElement().right,
           positionElement().bottom + positionElement().height
         );
       const td = findTdFun();
-      if (td.classList.contains("btn")) {
-        return;
+      if (td) {
+        if (td.classList.contains("cell")){
+          const tdNum = [...td.parentElement.children].indexOf(td);
+          const allTr = getTrArr();
+          for (let i = 0; i < this.row; i++) {
+            let removeTd = allTr[i].children[tdNum];
+            allTr[i].removeChild(removeTd);
+          }
+          this.column--;
+          if (!findTdFun().classList.contains("cell")) {
+            const lastElem = getTrArr()[0].lastChild;
+            btnRemoveColumn.style.left = lastElem.offsetLeft.toString() + "px"; 
+          }
+          if (getNumberColumn() === 1) {
+            btnRemoveColumn.classList.remove("btn-remove-visible");
+          }
+        }
       }
-      const tdNum = [...td.parentElement.children].indexOf(td);
-      const allTr = getTrArr();
-      for (let i = 0; i < this.row; i++) {
-        let removeTd = allTr[i].children[tdNum];
-        allTr[i].removeChild(removeTd);
-      }
-      this.column--;
-      if (!findTdFun().classList.contains("cell")) {
-        const lastElem = getTrArr()[0].lastChild;
-        btnRemoveColumn.style.left = lastElem.offsetLeft.toString() + "px"; //move the button if it is not opposite the cell
-      }
-      if (getNumberColumn() === 1) {
-        //if there is only one column, remove the delete column button
-        btnRemoveColumn.classList.remove("btn-remove-visible");
-      }
+      
     };
 
     /*......................Button functions........................*/
@@ -130,7 +141,9 @@ class Table {
     };
 
     const moveRemoveBtn = (btnRemoveColumn, btnRemoveRow, e) => {
-      //move the delete buttons on the x and y axis
+      /*
+      move the delete buttons on the x and y axis
+      */
       const target = e.target;
       if (target.classList.contains("cell")) {
         btnRemoveColumn.style.left = target.offsetLeft.toString() + "px";
@@ -139,11 +152,15 @@ class Table {
     };
 
     const removeBtnVisible = () => {
-      //display only if the number of columns> 1;
+      /*
+      display only if the number of columns> 1;
+      */
       if (getNumberColumn() > 1) {
         btnRemoveColumn.classList.add("btn-remove-visible");
       }
-      //display only if the number of lines> 1;
+      /*
+      display only if the number of lines> 1;
+      */
       if (getTrArr().length > 1) {
         btnRemoveRow.classList.add("btn-remove-visible");
       }
@@ -203,12 +220,14 @@ class Table {
 
     /*......................Table creation........................*/
 
-    //to prevent the reuse of the creative function in an instance
+    /*
+    to prevent the reuse of the creative function in an instance
+    */
     if (this.flag) {
-      return null;
+      return console.log("table already created!!!");
     }
     this.flag = true;
-
+    
     if (!this.row || !this.column) {
       return null;
     }
@@ -240,20 +259,21 @@ class Table {
     div.appendChild(btnAddRow);
     div.appendChild(btnRemoveColumn);
     div.appendChild(btnRemoveRow);
+    /*
+    in the code below is the addition of listeners
+    */
     addRowListener(btnAddRow);
     addColumnListener(btnAddColumn);
     removeRowListener(btnRemoveRow);
     removeColumnListener(btnRemoveColumn);
-    moveRemoveBtnListener(this.table, btnRemoveColumn, btnRemoveRow); //add listener move delete buttons
-    removeBtnVisibleListener(this.table); //display delete buttons when hovering over a table
+    moveRemoveBtnListener(this.table, btnRemoveColumn, btnRemoveRow);
+    removeBtnVisibleListener(this.table);
     removeBtnHiddenListener(this.table, btnRemoveColumn, btnRemoveRow);
     removeBtnIsActiveListener(btnRemoveRow);
     removeBtnIsActiveListener(btnRemoveColumn);
     removeBtnIsInActiveListener(btnRemoveColumn, btnRemoveRow);
-    removeBtnHiddenListener(btnRemoveColumn, btnRemoveColumn, btnRemoveRow); //if you remove the mouse with
-    //remove column the button disappears
-    removeBtnHiddenListener(btnRemoveRow, btnRemoveColumn, btnRemoveRow); //if you remove the mouse with
-    //remove row the button disappears
+    removeBtnHiddenListener(btnRemoveColumn, btnRemoveColumn, btnRemoveRow);
+    removeBtnHiddenListener(btnRemoveRow, btnRemoveColumn, btnRemoveRow);
   }
 }
 

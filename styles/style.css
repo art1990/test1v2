@@ -1,9 +1,12 @@
 .content {
     display: grid;
     grid-template-rows: auto auto auto;
-    grid-template-columns: 52px auto auto;
+    grid-template-columns: 52px max-content auto;
     margin: 50px 0 50px 50px;
     justify-content: left;
+    overflow-x: auto;
+    padding: 10px;
+    
 }
 
 .table{
@@ -11,12 +14,14 @@
     grid-row: 2/3;
     border: 2px solid #46ace7;
     display: block;
+  
 }
 
 .cell{
     background-color: #46ace7;
     width: 50px;
     height: 50px;
+   
 }
 
 .btn {

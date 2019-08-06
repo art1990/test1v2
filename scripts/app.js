@@ -66,8 +66,8 @@ class Table {
         );
       const findTr = () => findTd().parentNode;
       const td = findTd();
-      if(td) {
-        if(td.classList.contains("cell")){
+      if (td) {
+        if (td.classList.contains("cell")) {
           const tr = findTr();
           this.table.removeChild(tr);
           this.row--;
@@ -76,16 +76,13 @@ class Table {
           */
           if (!findTr().classList.contains("table-row")) {
             const lastElem = this.table.lastChild;
-            btnRemoveRow.style.top = lastElem.offsetTop.toString() + "px"; 
+            btnRemoveRow.style.top = lastElem.offsetTop.toString() + "px";
           }
           if (getTrArr().length === 1) {
             btnRemoveRow.classList.remove("btn-remove-visible");
           }
-        } 
+        }
       }
-          
-     
-      
     };
 
     const removeColumn = e => {
@@ -98,7 +95,7 @@ class Table {
         );
       const td = findTdFun();
       if (td) {
-        if (td.classList.contains("cell")){
+        if (td.classList.contains("cell")) {
           const tdNum = [...td.parentElement.children].indexOf(td);
           const allTr = getTrArr();
           for (let i = 0; i < this.row; i++) {
@@ -108,14 +105,13 @@ class Table {
           this.column--;
           if (!findTdFun().classList.contains("cell")) {
             const lastElem = getTrArr()[0].lastChild;
-            btnRemoveColumn.style.left = lastElem.offsetLeft.toString() + "px"; 
+            btnRemoveColumn.style.left = lastElem.offsetLeft.toString() + "px";
           }
           if (getNumberColumn() === 1) {
             btnRemoveColumn.classList.remove("btn-remove-visible");
           }
         }
       }
-      
     };
 
     /*......................Button functions........................*/
@@ -227,7 +223,7 @@ class Table {
       return console.log("table already created!!!");
     }
     this.flag = true;
-    
+
     if (!this.row || !this.column) {
       return null;
     }

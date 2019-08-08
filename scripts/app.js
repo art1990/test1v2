@@ -1,115 +1,112 @@
 class Table {
   constructor(row, column) {
-    this.row = row;
-    this.column = column;
+    this.currentRow = row;
+    this.currentColumn = column;
     this.createTable();
   }
 
+  createElement ({ type, classList, innerText }) {
+    const element = document.createElement(type);
+    element.classList.add(...classList);
+    if (innerText) {
+      element.innerText = innerText;
+    }
+    return element;
+  };
+
   createTable() {
-    /*......................Get function........................*/
+    if (this.flag) {
+      return console.log("table already created!!!");
+    }
+    this.flag = true;
+    if (!this.currentRow || !this.currentColumn) {
+      return console.log("row or column does not null!!!");
+    }
 
-    const getRows = () => {
-      return table.querySelectorAll("tr");
-    };
+    const div = this.createElement({ type: "div", classList: ["content"] });
+    const table = this.createElement({ type: "table", classList: ["table"] });
+    const createRowContainer = () =>
+    this.createElement({ type: "tr", classList: ["table-row"] });
+    const createCell = () => this.createElement({ type: "td", classList: ["cell"] });
 
-    /*......................Create tag function........................*/
-
-    const createElement = ({ type, classList, innerText }) => {
-      const element = document.createElement(type);
-      element.classList.add(...classList);
-      if (innerText) {
-        element.innerText = innerText;
-      }
-      return element;
-    };
-
-    const createRow = () =>
-      createElement({ type: "tr", classList: ["table-row"] });
-    const createCell = () => createElement({ type: "td", classList: ["cell"] });
-    const table = createElement({ type: "table", classList: ["table"] });
+    const getRows = () => table.querySelectorAll("tr");
+    const checkClass = (element, className) => element.classList.contains(className);
 
     /*......................Work with rows and columns........................*/
 
     const findCell = target => {
-      const element = target.getBoundingClientRect();
+      const {width, height, right, bottom} = target.getBoundingClientRect();
       return document.elementFromPoint(
-        target.classList.contains("btn-remove-row")
-          ? element.width + element.right
-          : element.right,
-        target.classList.contains("btn-remove-column")
-          ? element.height + element.bottom
-          : element.bottom
+        checkClass(target, "btn-remove-row")?width + right: right,
+        checkClass(target, "btn-remove-column")? height + bottom: bottom
       );
     };
 
     const addRow = () => {
-      const row = createRow();
-      for (let i = 0; i < this.column; i++) {
+      const row = createRowContainer();
+      for (let i = 0; i < this.currentColumn; i++) {
         row.appendChild(createCell());
       }
       table.appendChild(row);
-      this.row++;
+      this.currentRow++;
     };
 
     const addColumn = () => {
-      const rows = getRows();
-      for (let i = 0; i < this.row; i++) {
+      /*const rows = getRows();*/
+      getRows().forEach((row) => {
+        row.appendChild(createCell())
+      });
+      /*for (let i = 0; i < this.currentRow; i++) {
         rows[i].appendChild(createCell());
-      }
-      this.column++;
+      }*/
+      this.currentColumn++;
     };
 
-    const removeRow = e => {
-      const currentCell = findCell(e.target);
-      if (!currentCell || !currentCell.classList.contains("cell")) {
-        return;
-      }
+    const removeRow = ({target}) => {
+      const currentCell = findCell(target);
       table.removeChild(currentCell.parentNode);
-      this.row--;
-      if (!findCell(e.target).classList.contains("cell")) {
-        btnRemoveRow.style.top = table.lastChild.offsetTop + "px";
+      this.currentRow--;
+      if (!checkClass(findCell(target), "cell")) {
+        btnRemoveRow.style.top = `${table.lastChild.offsetTop}px`;
       }
-      if (getRows().length === 1) {
+      if (this.currentRow === 1) {
         btnRemoveRow.classList.remove("btn-show");
       }
     };
 
-    const removeColumn = e => {
-      const currentCell = findCell(e.target);
-      if (!currentCell || !currentCell.classList.contains("cell")) {
-        return;
-      }
-      const indexCell = Array.from(currentCell.parentNode.children).indexOf(
-        currentCell
-      );
+    const removeColumn = ({target}) => {
+      const currentCell = findCell(target);
+      const indexCell = [...currentCell.parentNode.children].indexOf(currentCell);
       const rows = getRows();
-      for (let i = 0; i < this.row; i++) {
+      rows.forEach((row, i, rows) => {
+        rows[i].removeChild(row.children[indexCell])
+      });
+      /*for (let i = 0; i < this.currentRow; i++) {
         rows[i].removeChild(rows[i].children[indexCell]);
+      }*/
+      this.currentColumn--;
+      if (this.currentColumn === indexCell) {
+        btnRemoveColumn.style.left = `${rows[0].lastChild.offsetLeft}px`;
       }
-      this.column--;
-      if (!findCell(e.target).classList.contains("cell")) {
-        btnRemoveColumn.style.left = getRows()[0].lastChild.offsetLeft + "px";
-      }
-      if (this.column === 1) {
+      if (this.currentColumn === 1) {
         btnRemoveColumn.classList.remove("btn-show");
       }
     };
 
     /*......................Button functions........................*/
 
-    const moveButton = e => {
-      const target = e.target;
-      if (target.classList.contains("cell")) {
-        btnRemoveColumn.style.left = target.offsetLeft.toString() + "px";
-        btnRemoveRow.style.top = target.offsetTop.toString() + "px";
+    const moveButton = ({target}) => {
+      if (checkClass(target, "cell")) {
+        btnRemoveColumn.style.left = `${target.offsetLeft}px`;
+        btnRemoveRow.style.top = `${target.offsetTop}px`;
       }
     };
 
     const showButton = () => {
-      if (this.column > 1) {
+      if (this.currentColumn > 1) {
         btnRemoveColumn.classList.add("btn-show");
       }
-      if (this.row > 1) {
+      if (this.currentRow > 1) {
         btnRemoveRow.classList.add("btn-show");
       }
     };
@@ -121,42 +118,36 @@ class Table {
 
     /*......................Table creation........................*/
 
-    if (this.flag) {
-      return console.log("table already created!!!");
-    }
-    this.flag = true;
-    if (!this.row || !this.column) {
-      return null;
-    }
+   
 
-    const div = createElement({ type: "div", classList: ["content"] });
-    const btnAddColumn = createElement({
+
+    const btnAddColumn = this.createElement({
       type: "button",
       innerText: "+",
       classList: ["btn", "btn-add", "btn-add-column"]
     });
-    const btnAddRow = createElement({
+    const btnAddRow = this.createElement({
       type: "button",
       innerText: "+",
       classList: ["btn", "btn-add", "btn-add-row"]
     });
-    const btnRemoveColumn = createElement({
+    const btnRemoveColumn = this.createElement({
       type: "button",
       innerText: "-",
       classList: ["btn", "btn-remove", "btn-remove-column"]
     });
-    const btnRemoveRow = createElement({
+    const btnRemoveRow = this.createElement({
       type: "button",
       innerText: "-",
       classList: ["btn", "btn-remove", "btn-remove-row"]
     });
 
-    for (let j = 0; j < this.row; j++) {
-      let tr = createRow();
-      for (let i = 0; i < this.column; i++) {
-        tr.appendChild(createCell());
+    for (let j = 0; j < this.currentRow; j++) {
+      let row = createRowContainer();
+      for (let i = 0; i < this.currentColumn; i++) {
+        row.appendChild(createCell());
       }
-      table.appendChild(tr);
+      table.appendChild(row);
     }
     document.body.appendChild(div);
     div.appendChild(table);

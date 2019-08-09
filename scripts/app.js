@@ -13,9 +13,7 @@ class Table {
     if (!this.row || !this.column) {
       return console.log("row or column does not null!!!");
     }
-
-    const div = this.createElement({ type: "div", classList: ["content"] });
-    this.table = this.createElement({ type: "table", classList: ["table"] });
+   
     const btnAddColumn = this.createElement({
       type: "button",
       innerText: "+",
@@ -37,6 +35,16 @@ class Table {
       classList: ["btn", "btn-remove", "btn-remove-row"]
     });
 
+    this.table = this.createElement({ type: "table", classList: ["table"] });
+
+    const div = this.createElement({ 
+      type: "div",
+      classList: ["content"],
+      children: [this.table, btnAddColumn, btnAddRow, this.btnRemoveColumn, this.btnRemoveRow] 
+    });
+    
+    document.body.appendChild(div)  
+
     for (let j = 0; j < this.row; j++) {
       let row = this.createRow();
       for (let i = 0; i < this.column; i++) {
@@ -44,13 +52,6 @@ class Table {
       }
       this.table.appendChild(row);
     }
-
-    document.body.appendChild(div);
-    div.appendChild(this.table);
-    div.appendChild(btnAddColumn);
-    div.appendChild(btnAddRow);
-    div.appendChild(this.btnRemoveColumn);
-    div.appendChild(this.btnRemoveRow);
 
     /*............Add listeners to html element..........*/
     btnAddRow.addEventListener("click", this.addRow.bind(this));
@@ -67,12 +68,14 @@ class Table {
   }
 
   /*......functions for creating HTML elements.......*/
-  createElement({ type, classList, innerText }) {
+  createElement({ type, classList, innerText, children }) {
     const element = document.createElement(type);
     element.classList.add(...classList);
     if (innerText) {
       element.innerText = innerText;
     }
+    if (children) {
+    children.forEach(child => element.appendChild(child))}
     return element;
   }
 
